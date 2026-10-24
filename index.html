@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แมวหายตอนเที่ยงคืน — repo ต้นแบบทำคลิปจากมือถือ</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;color:#eee;font:15px -apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px}
+canvas{width:min(92vw,360px);aspect-ratio:9/16;border-radius:14px;background:#111}
+.row{display:flex;gap:8px;margin:12px 0;width:min(92vw,360px)}
+button{flex:1;padding:12px;border-radius:12px;border:1px solid #0a84ff;background:transparent;color:#0a84ff;font:inherit;font-weight:600}
+button.rec{border-color:#ff453a;color:#ff453a}#st{width:min(92vw,360px);font-size:13px;color:#999;text-align:center;min-height:20px}
+a.dl{display:block;text-align:center;color:#30d158;margin:8px;font-size:16px}
+</style></head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div class="row"><button id="play">▶ เล่น</button><button id="rec" class="rec">⬇ บันทึกเป็น MP4</button></div>
+<div id="st"></div>
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5/build/mp4-muxer.js"></script>
+<script>
+// คลิป 20 วินาที 3 ฉาก: ห้องมืด → ตามหาแมว → เจอแมวในกล่อง (หักมุม)
+const END=20,FPS=30,cv=document.getElementById('c'),g=cv.getContext('2d');
+const ease=x=>x<0?0:x>1?1:1-Math.pow(1-x,3);
+function stick(x,y,s,t,walk,face,col){g.save();g.translate(x,y);g.scale(s*face,s);g.strokeStyle=col||'#f5d36b';g.lineWidth=9;g.lineCap='round';
+ const w=walk?Math.sin(t*7):0,L=(a,b,c,d)=>{g.beginPath();g.moveTo(a,b);g.lineTo(c,d);g.stroke()};
+ L(0,-150,0,-70);L(0,-70,40*w,0);L(0,-70,-40*w,0);L(0,-130,35*-w+15,-85);L(0,-130,-35*-w+15,-85);
+ g.beginPath();g.arc(0,-185,34,0,7);g.fillStyle='#14141c';g.fill();g.stroke();g.fillStyle=col||'#f5d36b';g.beginPath();g.arc(12,-188,5,0,7);g.fill();g.restore()}
+function cat(x,y,s,blink){g.save();g.translate(x,y);g.scale(s,s);g.fillStyle='#f0923a';g.beginPath();g.ellipse(0,0,46,34,0,0,7);g.fill();
+ g.beginPath();g.moveTo(-34,-18);g.lineTo(-24,-52);g.lineTo(-8,-26);g.moveTo(34,-18);g.lineTo(24,-52);g.lineTo(8,-26);g.fill();
+ g.fillStyle='#1a1008';if(blink){g.fillRect(-20,-6,12,3);g.fillRect(8,-6,12,3)}else{g.beginPath();g.arc(-14,-5,6,0,7);g.arc(14,-5,6,0,7);g.fill()}g.restore()}
+function sub(t,a,b,c){if(t<a||t>b)return;const k=ease((t-a)/.3);g.globalAlpha=k;g.font='800 64px Kanit';g.textAlign='center';g.lineWidth=12;g.strokeStyle='#000';g.strokeText(c,540,1500+30*(1-k));g.fillStyle='#fff';g.fillText(c,540,1500+30*(1-k));g.globalAlpha=1}
+function room(light){const gr=g.createLinearGradient(0,0,0,1920);gr.addColorStop(0,'#141a33');gr.addColorStop(1,'#07080f');g.fillStyle=gr;g.fillRect(0,0,1080,1920);
+ g.fillStyle='#1d2547';g.fillRect(620,380,300,380);g.fillStyle='#e8e3c8';g.beginPath();g.arc(800,500,46,0,7);g.fill();// หน้าต่าง+พระจันทร์
+ g.fillStyle='#0c0e1a';g.fillRect(0,1240,1080,680);if(light){const rg=g.createRadialGradient(light,1180,10,light,1180,420);rg.addColorStop(0,'rgba(255,230,150,.45)');rg.addColorStop(1,'rgba(255,230,150,0)');g.fillStyle=rg;g.fillRect(0,700,1080,900)}}
+function box(x,open){g.fillStyle='#8a5a32';g.fillRect(x-110,1100,220,140);g.fillStyle='#a8703f';g.save();g.translate(x-110,1100);g.rotate(-open*1.1);g.fillRect(0,-12,220,14);g.restore()}
+window.render=t=>{g.setTransform(1,0,0,1,0,0);
+ if(t<7){room(0);stick(540,1240,1.4,t,0,1);g.font='800 90px Kanit';g.textAlign='center';g.fillStyle='#ff4a3a';if(t<2.5)g.fillText('เที่ยงคืน',540,300);
+  sub(t,.3,3,'ตื่นมา… แมวหายไปไหน?');sub(t,3.2,7,'เรียกยังไงก็ไม่มา')}
+ else if(t<14){const x=200+(t-7)*95;room(x+40);stick(x,1240,1.4,t,1,1);box(820,0);sub(t,7.2,10.5,'เดินหาทั่วห้อง');sub(t,10.7,14,'กล่องนั่น… ขยับได้?')}
+ else{room(820);stick(560,1240,1.4,t,0,1);const k=ease((t-14.3)/.6);box(820,k);if(t>14.5)cat(820,1080-60*k,1.6,Math.floor(t*2)%5==0);
+  sub(t,14.4,17,'อ้าว! นอนอยู่ในกล่องนี่เอง');if(t>17){g.font='800 72px Kanit';g.textAlign='center';g.fillStyle='#ffd23f';g.fillText('แมวทุกตัวรักกล่อง',540,420)}}};
+let ready=document.fonts.ready.then(()=>render(0));const st=m=>document.getElementById('st').textContent=m;
+document.getElementById('play').onclick=()=>{const s=performance.now();(function f(){const t=(performance.now()-s)/1000;render(Math.min(t,END));if(t<END)requestAnimationFrame(f)})()};
+// บันทึกเป็น MP4 ในเครื่อง (WebCodecs) — ไม่ต้องมีเซิร์ฟเวอร์ ; เครื่องเก่าใช้ไม่ได้จะอัดแบบเรียลไทม์แทน
+document.getElementById('rec').onclick=async()=>{await ready;try{
+ if(!window.VideoEncoder)throw 'nowc';const cfg={codec:'avc1.640028',width:1080,height:1920,bitrate:6e6,framerate:FPS};if(!(await VideoEncoder.isConfigSupported(cfg)).supported)throw 'nowc';
+ const mux=new Mp4Muxer.Muxer({target:new Mp4Muxer.ArrayBufferTarget(),video:{codec:'avc',width:1080,height:1920},fastStart:'in-memory'});
+ const enc=new VideoEncoder({output:(c,m)=>mux.addVideoChunk(c,m),error:e=>st('ผิดพลาด '+e)});enc.configure(cfg);
+ for(let i=0;i<END*FPS;i++){render(i/FPS);const fr=new VideoFrame(cv,{timestamp:i*1e6/FPS,duration:1e6/FPS});enc.encode(fr,{keyFrame:i%60==0});fr.close();if(i%15==0){st('กำลังสร้าง '+Math.round(i/(END*FPS)*100)+'%');await new Promise(r=>setTimeout(r,0))}}
+ await enc.flush();mux.finalize();done(new Blob([mux.target.buffer],{type:'video/mp4'}),'clip.mp4')
+}catch(e){const ty=['video/mp4','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));st('เครื่องนี้ใช้โหมดอัดสด รอ '+END+' วินาที…');
+ const r=new MediaRecorder(cv.captureStream(FPS),{mimeType:ty}),ch=[];r.ondataavailable=x=>ch.push(x.data);r.onstop=()=>done(new Blob(ch,{type:ty}),ty.includes('mp4')?'clip.mp4':'clip.webm');r.start();
+ const s=performance.now();(function f(){const t=(performance.now()-s)/1000;render(Math.min(t,END));if(t<END)requestAnimationFrame(f);else r.stop()})()}};
+function done(b,n){st('เสร็จแล้ว '+(b.size/1048576).toFixed(1)+' MB');const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.className='dl';a.textContent='แตะเพื่อบันทึก '+n;document.body.appendChild(a);window.RESULT={n,size:b.size}}
+</script></body></html>
