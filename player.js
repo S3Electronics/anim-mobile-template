@@ -12,7 +12,8 @@
   document.head.appendChild(css); cv.after(ui);
   const $ = (id) => document.getElementById(id), st = (m) => ($('pl-st').textContent = m);
   const hasVoice = () => !!(window.CLIP_SOUND?.voice?.some((l) => !l.file));
-  if (hasVoice()) $('pl-voice-row').hidden = false;
+  // ประโยคที่ยังไม่มีไฟล์และเซิร์ฟเวอร์ยังไม่ทำให้ → ค่อยโชว์ช่องคีย์
+  (async () => { const L = (window.CLIP_SOUND?.voice || []).filter((l) => !l.file); for (const l of L) if (!(await SOUND.autoFile(l))) { $('pl-voice-row').hidden = false; break; } })();
   const ready = document.fonts.ready.then(() => window.render(0));
 
   $('pl-key').onclick = () => {
