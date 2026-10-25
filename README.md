@@ -6,6 +6,8 @@ repo ต้นแบบ: Fork ไปแล้วสั่ง Claude เขีย
 
 สไลด์สอนทีละขั้น: https://hub.juicystock.com/hub/motion/mobile-anim/
 
+★คนใหม่ เริ่มที่นี่: [START-TH.md](START-TH.md) — บัญชีที่ต้องมี, เชื่อม Claude กับ GitHub, ตั้งเสียงพากย์, เช็กว่าใช้ได้
+
 ## เริ่มใช้ 5 ขั้น
 
 1. กดปุ่ม Fork (มุมขวาบนของหน้านี้) → Create fork  ได้ repo ชื่อ `anim-mobile-template` ในบัญชีเรา
