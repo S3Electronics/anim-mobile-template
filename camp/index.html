@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ค้างภู กฎเอาตัวรอดจากซอมบี้</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;color:#eee;font:15px -apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px}
+canvas{width:min(92vw,360px);aspect-ratio:9/16;border-radius:14px;background:#111}
+</style></head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5/build/mp4-muxer.js"></script>
+<script src="../sound.js"></script>
+<script>
+// คลิป 10 วินาที (แนวเดียวกับ "ค้างภู Ep.1"): ลานกางเต็นท์ → เต็นท์ข้างๆ หลับอยู่ → กฎข้อ 1 → ซอมบี้บนเขา + เสียงเดินทางไกล → กลับมาที่ลาน 04:00
+window.END=10;
+window.CLIP_SOUND={
+ music:{s:'music_suspense',vol:.3,fadeIn:.5,fadeOut:1},
+ sfx:[
+  {t:0,s:'wind',vol:.35,dur:10},
+  {t:1.65,s:'synth:whoosh',vol:.6},
+  {t:3.6,s:'synth:pop',vol:.7},
+  {t:5.15,s:'synth:whoosh',vol:.6},
+  {t:5.4,s:'footsteps_gravel',vol:.6,dur:3.1},
+  {t:5.6,s:'zombie_groan',vol:.7},
+  {t:6.1,s:'synth:riser',vol:.5},
+  {t:7.4,s:'synth:pop',vol:.6},
+  {t:8.45,s:'synth:whoosh',vol:.6},
+  {t:8.7,s:'clock_tick',vol:.6,dur:1.3},
+ ],
+ voice:[ // ยังไม่มี file → หลัง Merge เซิร์ฟเวอร์ทำเสียงพากย์ให้เอง
+  {t:.2,text:'ตอนคุณค้างเต็นท์',voice:'Charon',style:'เล่าเรื่องจริงจัง น่าติดตาม'},
+  {t:1.9,text:'อย่าปลุกคนเต็นท์ข้างๆ',voice:'Charon',style:'เล่าเรื่องจริงจัง น่าติดตาม',hl:'อย่าปลุก'},
+  {t:3.75,text:'กฎข้อหนึ่ง มันเดินตามเสียง',voice:'Charon',style:'เล่าเรื่องจริงจัง น่าติดตาม',sub:false},
+  {t:5.5,text:'กลางคืน',voice:'Charon',style:'เล่าเรื่องจริงจัง น่าติดตาม',col:'#ffd23f'},
+  {t:6.3,text:'เสียงเดินทางได้ไกล',voice:'Charon',style:'เล่าเรื่องจริงจัง น่าติดตาม'},
+  {t:7.55,text:'กว่ากลางวัน',voice:'Charon',style:'เล่าเรื่องจริงจัง น่าติดตาม'},
+  {t:8.7,text:'และบนลานนี้',voice:'Charon',style:'พูดช้าๆ น่าขนลุก'},
+ ]};
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+const ease=x=>x<0?0:x>1?1:1-Math.pow(1-x,3),cl=x=>x<0?0:x>1?1:x;
+const STARS=[...Array(40)].map((_,i)=>[(i*397)%1080,(i*211)%700,1+(i%3)]);
+function sky(top,bot){const gr=g.createLinearGradient(0,0,0,1920);gr.addColorStop(0,top);gr.addColorStop(1,bot);g.fillStyle=gr;g.fillRect(-200,-200,1480,2320)}
+function stars(t){for(const[x,y,r]of STARS){g.globalAlpha=.4+.4*Math.sin(t*3+x);g.fillStyle='#fff';g.fillRect(x,y,r*2,r*2)}g.globalAlpha=1}
+function moon(x,y,r){const rg=g.createRadialGradient(x,y,r*.6,x,y,r*4);rg.addColorStop(0,'rgba(220,225,255,.35)');rg.addColorStop(1,'rgba(220,225,255,0)');g.fillStyle=rg;g.fillRect(x-r*4,y-r*4,r*8,r*8);g.fillStyle='#eef0ff';g.beginPath();g.arc(x,y,r,0,7);g.fill()}
+function vignette(){const rg=g.createRadialGradient(540,900,500,540,960,1300);rg.addColorStop(0,'rgba(0,0,0,0)');rg.addColorStop(1,'rgba(0,0,10,.55)');g.fillStyle=rg;g.fillRect(0,0,1080,1920)}
+function dome(x,y,w,h){g.beginPath();g.moveTo(x-w/2,y);g.bezierCurveTo(x-w/2,y-h*1.33,x+w/2,y-h*1.33,x+w/2,y);g.closePath()}
+// เต็นท์โดม: col = สี, lit = มีไฟข้างใน
+function tent(x,y,w,h,col,lit){
+ if(lit){const rg=g.createRadialGradient(x,y-h*.4,10,x,y-h*.4,w);rg.addColorStop(0,'rgba(255,220,140,.35)');rg.addColorStop(1,'rgba(255,220,140,0)');g.fillStyle=rg;g.fillRect(x-w,y-h*1.5,w*2,h*2)}
+ g.save();dome(x,y,w,h);g.fillStyle=col;g.fill();g.clip();
+ if(lit){const rg=g.createRadialGradient(x,y-h*.3,5,x,y-h*.3,w*.6);rg.addColorStop(0,'rgba(255,240,200,.55)');rg.addColorStop(1,'rgba(255,240,200,0)');g.fillStyle=rg;g.fillRect(x-w,y-h*2,w*2,h*2)}
+ g.fillStyle='rgba(0,0,0,.18)';dome(x,y,w*.38,h*.62);g.fill();
+ g.strokeStyle='rgba(0,0,0,.3)';g.lineWidth=Math.max(2,w*.012);
+ g.beginPath();g.moveTo(x-w*.5,y);g.bezierCurveTo(x-w*.4,y-h*1.2,x+w*.25,y-h*1.2,x+w*.3,y);g.stroke();
+ g.beginPath();g.moveTo(x+w*.5,y);g.bezierCurveTo(x+w*.4,y-h*1.2,x-w*.25,y-h*1.2,x-w*.3,y);g.stroke();
+ g.fillStyle='rgba(0,0,30,.25)';g.fillRect(x-w,y-h*2,w*.25,h*2);g.restore()}
+function trees(y){g.fillStyle='#262a4f';for(let i=0;i<14;i++){const x=i*85-20,r=40+(i*37)%30;g.beginPath();g.arc(x,y-r*.6,r,0,7);g.arc(x+40,y-r*.3,r*.8,0,7);g.fill()}g.fillRect(-50,y-20,1180,60);g.fillRect(900,y-500,14,500)}
+function grass(x,y,s){g.strokeStyle='rgba(200,200,230,.35)';g.lineWidth=3;for(let i=-3;i<=3;i++){g.beginPath();g.moveTo(x+i*5*s,y);g.lineTo(x+i*9*s,y-(30+(i*i)*-2)*s);g.stroke()}}
+// ฉากลานกางเต็นท์ (ใช้ 2 รอบ: ต้นคลิป กับท้ายคลิป)
+const CAMP=[[160,520,170,'#3a5f8a',0],[330,505,150,'#c4636a',0],[700,500,150,'#6a8db0',0],[930,520,170,'#7aa79a',0],[460,640,230,'#b8495a',0],[730,600,250,'#c9c6dd',1],[1020,640,230,'#d88f8a',0],[520,760,330,'#e6b968',1],[880,880,380,'#d6d6ea',1],[110,1060,420,'#3f7f86',0],[920,1180,520,'#a8794a',0]];
+function camp(t,jacket){sky('#2a2c58','#4b4570');stars(t);moon(150,150,48);trees(470);
+ g.fillStyle='#4b4772';g.fillRect(-100,460,1280,1500);
+ g.fillStyle='rgba(150,130,170,.35)';g.beginPath();g.moveTo(560,560);g.lineTo(640,560);g.lineTo(900,1920);g.lineTo(200,1920);g.fill();// ทางเดิน
+ for(const[x,y,w,c,l]of CAMP)tent(x,y,w,w*.62,c,l);
+ for(let i=0;i<9;i++)grass((i*263)%1080,1000+(i*157)%700,1+(i%3)*.4);
+ // คนยืนหันหลัง + หมา
+ const px=jacket?250:150,py=1150;g.fillStyle='#2b3350';g.fillRect(px-26,py-170,22,170);g.fillRect(px+4,py-170,22,170);
+ g.fillStyle=jacket||'#e07a2f';g.beginPath();g.roundRect(px-46,py-370,92,210,24);g.fill();g.fillStyle='#3e6a4a';g.fillRect(px-20,py-370,40,190);
+ g.fillStyle='#1d1d26';g.beginPath();g.arc(px,py-405,38,0,7);g.fill();
+ if(!jacket){const dx=360,dy=1140;g.fillStyle='#1c1d2a';g.beginPath();g.ellipse(dx,dy-60,48,70,.2,0,7);g.fill();g.beginPath();g.ellipse(dx-20,dy-150,30,26,0,0,7);g.fill();
+  g.beginPath();g.moveTo(dx-34,dy-165);g.lineTo(dx-30,dy-215);g.lineTo(dx-14,dy-170);g.moveTo(dx-14,dy-168);g.lineTo(dx-4,dy-215);g.lineTo(dx+4,dy-160);g.fill();
+  g.beginPath();g.ellipse(dx-48,dy-140,20,12,0,0,7);g.fill();g.fillStyle='#d8363b';g.fillRect(dx-38,dy-128,44,10)}}
+// ซอมบี้เดินไปทางขวา
+function zom(x,y,s,t,shirt,ph){g.save();g.translate(x,y);g.scale(s,s);const w=Math.sin(t*4+ph);g.lineCap='round';
+ g.strokeStyle='#4a5470';g.lineWidth=16;g.beginPath();g.moveTo(0,-90);g.lineTo(22*w,0);g.moveTo(0,-90);g.lineTo(-22*w,0);g.stroke();
+ g.fillStyle=shirt;g.save();g.translate(0,-90);g.rotate(.18);g.beginPath();g.roundRect(-20,-90,40,95,10);g.fill();g.restore();
+ g.strokeStyle='#8fae7a';g.lineWidth=11;g.beginPath();g.moveTo(14,-165);g.lineTo(48,-130+4*w);g.stroke();
+ g.fillStyle='#9cbf86';g.beginPath();g.arc(26,-200,24,0,7);g.fill();g.fillStyle='#2a2630';g.beginPath();g.arc(22,-210,24,Math.PI,0);g.fill();
+ g.fillStyle='#222';g.fillRect(36,-200,6,6);g.restore()}
+// ฉากภาพตัดขวางภูเขาตอนกลางคืน
+const ZS=['#c9683a','#7a8296','#b8b5a0','#8a8f9e','#d27a3e'];
+function hill(t){sky('#2b2d60','#3d3a72');stars(t);moon(560,120,60);
+ g.fillStyle='#6a4c6e';g.beginPath();g.moveTo(-50,640);g.lineTo(250,620);g.bezierCurveTo(520,600,640,260,1130,180);g.lineTo(1130,1920);g.lineTo(-50,1920);g.fill();
+ g.setLineDash([16,14]);g.strokeStyle='#f2e9ff';g.lineWidth=4;g.beginPath();g.moveTo(-50,640);g.lineTo(250,620);g.bezierCurveTo(520,600,640,260,1130,180);g.stroke();
+ g.fillStyle='#3b5ba0';g.beginPath();g.moveTo(-50,870);g.lineTo(300,860);g.bezierCurveTo(560,840,620,560,1130,520);g.lineTo(1130,620);g.lineTo(830,630);g.bezierCurveTo(700,640,600,1000,400,1020);g.lineTo(-50,1030);g.fill();
+ g.beginPath();g.moveTo(-50,870);g.lineTo(300,860);g.bezierCurveTo(560,840,620,560,1130,520);g.stroke();g.setLineDash([]);
+ g.fillStyle='#4e4580';g.beginPath();g.moveTo(-50,1030);g.lineTo(400,1020);g.bezierCurveTo(600,1000,700,640,830,630);g.lineTo(1130,620);g.lineTo(1130,1920);g.lineTo(-50,1920);g.fill();
+ g.strokeStyle='#fff';g.lineWidth=5;g.beginPath();g.moveTo(-50,1030);g.lineTo(400,1020);g.bezierCurveTo(600,1000,700,640,830,630);g.lineTo(1130,620);g.stroke();
+ g.fillStyle='rgba(30,25,60,.25)';for(let i=0;i<4;i++)g.fillRect(0,1150+i*170,1080,60);
+ g.fillStyle='#1e1d33';for(let i=0;i<5;i++)g.fillRect(i*34,1000-(i%2?30:46),24,i%2?30:46);g.fillStyle='#ffd55a';for(let i=0;i<5;i++)g.fillRect(i*34+8,990-(i%2?14:30),8,8);
+ const cg=g.createRadialGradient(880,600,5,880,600,130);cg.addColorStop(0,'rgba(255,210,120,.7)');cg.addColorStop(1,'rgba(255,210,120,0)');g.fillStyle=cg;g.fillRect(740,460,280,280);
+ [['#4c9a7c',820],['#e0574a',880],['#f1b23a',940],['#5a7fc8',1000]].forEach(([c,x])=>{g.fillStyle=c;dome(x,628,52,30);g.fill()})}
+function arcs(t,k){if(k<=0)return;const S={x:880,y:600};
+ for(let r=0;r<3;r++){const p=(t*1.2+r/3)%1;g.strokeStyle=`rgba(255,240,200,${.6*(1-p)*k})`;g.lineWidth=4;g.beginPath();g.ellipse(S.x,S.y,40+p*120,16+p*45,0,0,7);g.stroke()}
+ for(let i=0;i<5;i++){const p=ease((t-6.0-i*.1)/.9);if(p<=0)continue;const E={x:-20+i*120,y:1040},C={x:(S.x+E.x)/2+60,y:200-i*30};
+  g.save();g.shadowColor='#fff3c8';g.shadowBlur=24;g.strokeStyle='#fffbe8';g.lineWidth=9;g.beginPath();
+  for(let j=0;j<=40*p;j++){const u=j/40,a=(1-u)*(1-u),b=2*u*(1-u),c=u*u;const X=a*S.x+b*C.x+c*E.x,Y=a*S.y+b*C.y+c*E.y;j?g.lineTo(X,Y):g.moveTo(X,Y)}g.stroke();g.restore()}}
+function pill(x,y,txt,dot,sc){g.save();g.translate(x,y);g.scale(sc,sc);g.font='800 50px Kanit';const w=g.measureText(txt).width+(dot?150:90);
+ g.fillStyle='#fffbef';g.strokeStyle='#1d1b33';g.lineWidth=6;g.beginPath();g.roundRect(-w/2,-45,w,90,45);g.fill();g.stroke();
+ if(dot){g.fillStyle='#7d9cff';g.beginPath();g.arc(-w/2+55,0,18,0,7);g.fill();g.stroke()}
+ g.fillStyle='#1d1b33';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,dot?30:0,4);g.restore()}
+// กรอบเล็ก: ตอนกลางวัน อากาศอุ่น เสียงโค้งขึ้นฟ้า
+function dayPanel(k){if(k<=0)return;g.save();g.translate(-640*(1-k),0);const X=40,Y=150,W=620,H=470;
+ g.fillStyle='#f4ecd6';g.fillRect(X,Y,W,H);g.fillStyle='#c4e6f2';g.fillRect(X+20,Y+110,W-40,H-130);
+ g.fillStyle='#f6c945';g.beginPath();g.arc(X+330,Y+200,34,0,7);g.fill();
+ g.fillStyle='#c79a6a';g.beginPath();g.moveTo(X+20,Y+H-20);g.lineTo(X+20,Y+H-40);g.bezierCurveTo(X+300,Y+H-80,X+400,Y+300,X+W-20,Y+290);g.lineTo(X+W-20,Y+H-20);g.fill();
+ g.fillStyle='#4c9a7c';dome(X+W-80,Y+290,50,28);g.fill();
+ g.setLineDash([22,12]);g.strokeStyle='#e8552f';g.lineWidth=10;
+ for(let i=0;i<3;i++){g.beginPath();g.moveTo(X+W-80,Y+280);g.quadraticCurveTo(X+300-i*40,Y+250+i*30,X+20,Y+150+i*35);g.stroke()}g.setLineDash([]);
+ g.fillStyle='#1d1b33';g.font='800 56px Kanit';g.textAlign='left';g.textBaseline='alphabetic';g.fillText('กลางวัน',X+30,Y+80);
+ g.fillStyle='#1d1b33';g.beginPath();g.roundRect(X+300,Y+30,290,60,30);g.fill();g.fillStyle='#fffbef';g.beginPath();g.roundRect(X+305,Y+35,140,50,25);g.fill();
+ g.font='800 32px Kanit';g.textAlign='center';g.fillStyle='#1d1b33';g.fillText('กลางคืน',X+375,Y+71);g.fillStyle='#fffbef';g.fillText('กลางวัน',X+518,Y+71);
+ g.fillStyle='#1d1b33';g.font='800 44px Kanit';g.fillText('อากาศอุ่น',X+460,Y+H-40);g.restore()}
+// เต็นท์ข้างๆ แบบใกล้ๆ มีคนหลับอยู่
+function bigTent(t){sky('#262a55','#2f3060');stars(t);const s=1+.012*Math.sin(t*2.2);g.save();g.translate(540,1420);g.scale(s,s);g.translate(-540,-1420);
+ g.fillStyle='#c78c7d';dome(540,1420,1250,770);g.fill();g.save();dome(540,1420,1250,770);g.clip();
+ g.strokeStyle='rgba(120,60,60,.45)';g.lineWidth=16;g.beginPath();g.moveTo(-120,1420);g.bezierCurveTo(0,700,700,700,880,1420);g.stroke();g.beginPath();g.moveTo(1200,1420);g.bezierCurveTo(1080,700,380,700,200,1420);g.stroke();
+ g.fillStyle='rgba(120,60,60,.25)';g.beginPath();g.ellipse(560,1310,330,70,0,0,7);g.fill();g.restore();
+ g.strokeStyle='#33334a';g.lineWidth=16;g.setLineDash([5,5]);g.beginPath();g.moveTo(230,1420);g.bezierCurveTo(240,820,700,820,700,1420);g.stroke();g.setLineDash([]);
+ g.strokeStyle='rgba(60,40,50,.6)';g.lineWidth=3;g.setLineDash([10,9]);g.beginPath();g.moveTo(280,1420);g.bezierCurveTo(290,880,650,880,650,1420);g.stroke();g.setLineDash([]);
+ g.fillStyle='#8c95b0';g.save();g.translate(355,970);g.rotate(.5);g.fillRect(-14,-24,28,48);g.restore();g.strokeStyle='#33334a';g.lineWidth=6;g.beginPath();g.ellipse(368,1030,12,50,0,0,7);g.stroke();
+ g.restore();g.fillStyle='#3a3956';g.fillRect(0,1420,1080,500);
+ g.fillStyle='#fff';g.textAlign='center';for(let i=0;i<3;i++){const p=(t*.5+i/3)%1;g.globalAlpha=Math.sin(p*Math.PI);g.font=`800 ${40+p*40}px Kanit`;g.fillText('Z',160+p*120,1100-p*300);}g.globalAlpha=1}
+function card(k,t){if(k<=0)return;const y=-400+520*k;g.fillStyle='rgba(0,0,0,.35)';g.fillRect(105,y+15,900,330);g.fillStyle='#f6f1e4';g.fillRect(90,y,900,330);g.fillStyle='#e0473b';g.fillRect(90,y,18,330);
+ g.fillStyle='#1d1b33';g.beginPath();g.roundRect(390,y+30,300,74,37);g.fill();g.fillStyle='#fff';g.font='800 46px Kanit';g.textAlign='center';g.fillText('กฎข้อ 1',540,y+84);
+ g.fillStyle='#262433';g.font='800 112px Kanit';g.fillText('มันเดินตามเสียง',540,y+250)}
+// ซับจากเสียงพากย์ (hl = คำที่มีป้ายแดง, col = สีตัวหนังสือ)
+function subs(t){const l=SOUND.say(t);if(!l||l.sub===false)return;const k=ease((t-l.t)/.25),y=1260+30*(1-k);g.globalAlpha=k;g.font='800 92px Kanit';g.textBaseline='alphabetic';g.lineJoin='round';
+ if(l.hl&&l.text.startsWith(l.hl)){const a=l.hl,b=l.text.slice(a.length),wa=g.measureText(a).width,wb=g.measureText(b).width,x0=540-(wa+wb+60)/2;
+  g.fillStyle='#e8453c';g.beginPath();g.roundRect(x0-20,y-90,wa+40,124,14);g.fill();g.textAlign='left';g.fillStyle='#fff';g.fillText(a,x0,y);
+  g.lineWidth=14;g.strokeStyle='#000';g.strokeText(b,x0+wa+60,y);g.fillText(b,x0+wa+60,y)}
+ else{g.textAlign='center';g.lineWidth=14;g.strokeStyle='#000';g.strokeText(l.text,540,y);g.fillStyle=l.col||'#fff';g.fillText(l.text,540,y)}g.globalAlpha=1}
+window.render=t=>{g.setTransform(1,0,0,1,0,0);let z;
+ if(t<1.75){z=1+.05*t;g.translate(540,960);g.scale(z,z);g.translate(-540,-960);camp(t)}
+ else if(t<5.25){z=1.06-.06*ease((t-1.75)/.5);g.translate(540,960);g.scale(z,z);g.translate(-540,-960);bigTent(t);g.setTransform(1,0,0,1,0,0);card(ease((t-3.6)/.45),t)}
+ else if(t<8.55){z=1.05-.05*ease((t-5.25)/.5);g.translate(540,960);g.scale(z,z);g.translate(-540,-960);hill(t);arcs(t,cl((t-5.9)/.3));
+  for(let i=0;i<5;i++)zom(40+i*120+(t-5.25)*30,1032-i*1.5,1,t,ZS[i],i*1.3);
+  if(t>6.2)pill(640,800,'อากาศเย็น',1,ease((t-6.2)/.3));g.setTransform(1,0,0,1,0,0);dayPanel(ease((t-7.4)/.4))}
+ else{z=1.15+.05*(t-8.55);g.translate(300,1000);g.scale(z,z);g.translate(-300,-1000);camp(t,'#2f7a52');g.setTransform(1,0,0,1,0,0);pill(540,760,'04:00',0,ease((t-8.7)/.3)*1.3)}
+ g.setTransform(1,0,0,1,0,0);vignette();subs(t)};
+</script>
+<script src="../player.js"></script>
+</body></html>
