@@ -11,9 +11,35 @@ button.rec{border-color:#ff453a;color:#ff453a}#st{width:min(92vw,360px);font-siz
 a.dl{display:block;text-align:center;color:#30d158;margin:8px;font-size:16px}
 </style></head><body>
 <canvas id="c" width="1080" height="1920"></canvas>
-<div class="row"><button id="play">▶ เล่น</button><button id="rec" class="rec">⬇ บันทึกเป็น MP4</button></div>
+<div class="row"></div>
 <div id="st"></div>
 <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5/build/mp4-muxer.js"></script>
+<script src="../sound.js"></script>
+<script>
+// เสียง (เพิ่ม 26 ต.ค.): เพลง + เสียงประกอบตรงจังหวะภาพ + เสียงพากย์ทำไว้แล้วใน voice/ (ไม่ต้องใส่คีย์) ; ซับวาดเองในคลิป เลยตั้ง sub:false
+window.CLIP_SOUND={
+ music:{s:'music_suspense',vol:.28,fadeIn:1,fadeOut:2},
+ sfx:[{t:6.3,s:'footsteps_wood',vol:.6,dur:7.5},{t:10.2,s:'heartbeat',vol:.6,dur:3.5},{t:14.3,s:'synth:whoosh',vol:.5},{t:21.3,s:'door_creak',vol:.7},{t:28.3,s:'cat_meow',vol:.9},{t:31.7,s:'synth:hit',vol:.6},{t:34.7,s:'whoosh_fast',vol:.5},{t:44.3,s:'punch',vol:.4},{t:44.7,s:'punch',vol:.4},{t:47.8,s:'punch',vol:.5},{t:48.2,s:'punch',vol:.5},{t:48.6,s:'punch',vol:.5},{t:54.6,s:'ding',vol:.7},{t:57.3,s:'synth:riser',vol:.6}],
+ voice:[
+  {t:0.35,text:"ไฟห้อง 2307… ยังติดอยู่",voice:'Charon',file:'voice/blackout2-1.mp3',sub:false},
+  {t:3.25,text:"ทั้งที่ทั้งเมืองมืดสนิท",voice:'Charon',file:'voice/blackout2-2.mp3',sub:false},
+  {t:6.35,text:"แบกน้ำขึ้นบันได 23 ชั้น",voice:'Charon',file:'voice/blackout2-3.mp3',sub:false},
+  {t:10.25,text:"ขาสั่น… แต่ต้องรู้ให้ได้",voice:'Charon',file:'voice/blackout2-4.mp3',sub:false},
+  {t:14.35,text:"หน้าห้อง… มีแสงลอดใต้ประตู",voice:'Charon',file:'voice/blackout2-5.mp3',sub:false},
+  {t:17.75,text:"ทั้งที่เราล็อกประตูไว้แล้ว",voice:'Charon',file:'voice/blackout2-6.mp3',sub:false},
+  {t:21.35,text:"ไขกุญแจ… ค่อยๆ เปิด",voice:'Charon',file:'voice/blackout2-7.mp3',sub:false},
+  {t:28.35,text:"ห้องว่าง… มีแค่แมว",voice:'Charon',file:'voice/blackout2-8.mp3',sub:false},
+  {t:31.75,text:"กับตะเกียงที่เราไม่เคยมี",voice:'Charon',file:'voice/blackout2-9.mp3',sub:false},
+  {t:34.75,text:"และกระดาษอีกแผ่น",voice:'Charon',file:'voice/blackout2-10.mp3',sub:false},
+  {t:41.75,text:"ห้องข้างๆ…?",voice:'Charon',file:'voice/blackout2-11.mp3',sub:false},
+  {t:44.35,text:"ลองเคาะผนังห้องข้างๆ",voice:'Charon',file:'voice/blackout2-12.mp3',sub:false},
+  {t:47.85,text:"…มีเสียงเคาะตอบกลับมา",voice:'Charon',file:'voice/blackout2-13.mp3',sub:false},
+  {t:52.35,text:"ทั้งที่… ไม่มีสัญญาณ",voice:'Charon',file:'voice/blackout2-14.mp3',sub:false},
+  {t:54.65,text:"แต่มีข้อความเข้า",voice:'Charon',file:'voice/blackout2-15.mp3',sub:false},
+  {t:57.35,text:"ใครส่งมา…?",voice:'Charon',file:'voice/blackout2-16.mp3',sub:false}
+ ]
+};
+</script>
 <script>
 // คืนที่ไฟดับ ตอนที่ 2 (60 วินาที) ต่อจากตอนที่ 1: ห้อง 2307 ไฟติดทั้งที่ทั้งเมืองมืด
 // 0 ตึก → 6 แบกน้ำขึ้นบันได → 14 ทางเดินชั้น 23 → 21 ไขกุญแจเปิดประตู → 28 ในห้องมีตะเกียง
@@ -137,18 +163,7 @@ const SC=[[0,s1],[6,s2],[14,s3],[21,s4],[28,s5],[37,s6],[44,s7],[52,s8]];
 window.render=t=>{g.setTransform(1,0,0,1,0,0);let f=s1;for(const [a,fn] of SC)if(t>=a)f=fn;f(t);
  for(const [b] of SC.slice(1)){if(b==28)continue;const a=1-Math.abs(t-b)/.18;if(a>0)F('rgba(0,0,0,'+a+')',0,0,1080,1920)}
  if(t>27.4&&t<28.6)F('rgba(255,248,225,'+(1-Math.abs(t-28)/.6)+')',0,0,1080,1920)};
-let ready=document.fonts.ready.then(()=>render(0));const st=m=>document.getElementById('st').textContent=m;
-document.getElementById('play').onclick=()=>{const s=performance.now();(function f(){const t=(performance.now()-s)/1000;render(Math.min(t,END));if(t<END)requestAnimationFrame(f)})()};
-// บันทึกเป็น MP4 ในเครื่อง (WebCodecs) — ไม่ต้องมีเซิร์ฟเวอร์ ; เครื่องเก่าใช้ไม่ได้จะอัดแบบเรียลไทม์แทน
-document.getElementById('rec').onclick=async()=>{await ready;try{
- if(!window.VideoEncoder)throw 'nowc';const cfg={codec:'avc1.640028',width:1080,height:1920,bitrate:6e6,framerate:FPS};if(!(await VideoEncoder.isConfigSupported(cfg)).supported)throw 'nowc';
- const mux=new Mp4Muxer.Muxer({target:new Mp4Muxer.ArrayBufferTarget(),video:{codec:'avc',width:1080,height:1920},fastStart:'in-memory'});
- const enc=new VideoEncoder({output:(c,m)=>mux.addVideoChunk(c,m),error:e=>st('ผิดพลาด '+e)});enc.configure(cfg);
- for(let i=0;i<END*FPS;i++){while(enc.encodeQueueSize>2)await new Promise(r=>setTimeout(r,5));// รอ encoder ไม่ให้เฟรมกองจนแรมเต็ม (มือถือรีโหลดเอง)
- render(i/FPS);const fr=new VideoFrame(cv,{timestamp:i*1e6/FPS,duration:1e6/FPS});enc.encode(fr,{keyFrame:i%60==0});fr.close();if(i%15==0){st('กำลังสร้าง '+Math.round(i/(END*FPS)*100)+'%');await new Promise(r=>setTimeout(r,0))}}
- await enc.flush();mux.finalize();done(new Blob([mux.target.buffer],{type:'video/mp4'}),'clip.mp4')
-}catch(e){const ty=['video/mp4','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));st('เครื่องนี้ใช้โหมดอัดสด รอ '+END+' วินาที…');
- const r=new MediaRecorder(cv.captureStream(FPS),{mimeType:ty}),ch=[];r.ondataavailable=x=>ch.push(x.data);r.onstop=()=>done(new Blob(ch,{type:ty}),ty.includes('mp4')?'clip.mp4':'clip.webm');r.start();
- const s=performance.now();(function f(){const t=(performance.now()-s)/1000;render(Math.min(t,END));if(t<END)requestAnimationFrame(f);else r.stop()})()}};
-function done(b,n){st('เสร็จแล้ว '+(b.size/1048576).toFixed(1)+' MB');const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.className='dl';a.textContent='แตะเพื่อบันทึก '+n;document.body.appendChild(a);window.RESULT={n,size:b.size}}
-</script></body></html>
+window.END=END;document.fonts.ready.then(()=>render(0));
+</script>
+<script src="../player.js"></script>
+</body></html>

@@ -93,6 +93,12 @@
 
   // ---------- โหลดทุกเสียง + จัดเวลา ----------
   // voice: [{t:วินาที (ไม่ใส่ = ต่อจากประโยคก่อน), text, voice:'Kore'|'Puck'|'Charon'|..., style:'พูดตื่นเต้น', file:'voice/x.mp3', vol}]
+  // เสียงพากย์ที่เซิร์ฟเวอร์ทำให้อัตโนมัติ (บน cloud เรียก TTS ไม่ได้) — voice/auto.json = { "<เสียง>|<style>|<ข้อความ>": "voice/auto/xxx.mp3" }
+  // มีในนี้ = ใช้ไฟล์เลย ไม่ต้องใส่คีย์ ; ยังไม่มี = ใช้คีย์ Gemini ในเครื่อง (ถ้ามี) — ไฟล์มาเองภายใน ~5 นาทีหลัง Merge
+  let autoMap = null;
+  const autoKey = (l) => (l.voice || 'Kore') + '|' + (l.style || '') + '|' + l.text;
+  async function auto() { if (!autoMap) autoMap = fetch(ROOT + 'voice/auto.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})); return autoMap; }
+  S.autoFile = async (l) => (await auto())[autoKey(l)] || '';
   S.prepare = async function (onMsg = () => {}) {
     const cfg = window.CLIP_SOUND || {};
     S.missing = []; const warn = (m) => { S.missing.push(m); console.warn(m); };
@@ -100,7 +106,7 @@
     let prevEnd = 0, noVoice = 0;
     for (let i = 0; i < lines.length; i++) {
       const l = lines[i]; onMsg('เตรียมเสียงพากย์ ' + (i + 1) + '/' + lines.length);
-      try { l.buf = l.file ? await loadSound(l.file) : await tts(l); } catch (e) { warn(e.message); l.buf = null; }
+      try { const af = l.file ? '' : await S.autoFile(l); l.buf = l.file ? await loadSound(l.file) : af ? await loadSound(af) : await tts(l); } catch (e) { warn(e.message); l.buf = null; }
       if (!l.buf) noVoice++;
       l.dur = l.buf ? l.buf.duration : Math.max(1.2, l.text.length * .09); // ไม่มีเสียง = ประมาณจากความยาวข้อความ
       if (l.t == null) l.t = prevEnd + (i ? .25 : .3);
