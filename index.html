@@ -43,7 +43,8 @@ document.getElementById('rec').onclick=async()=>{await ready;try{
  if(!window.VideoEncoder)throw 'nowc';const cfg={codec:'avc1.640028',width:1080,height:1920,bitrate:6e6,framerate:FPS};if(!(await VideoEncoder.isConfigSupported(cfg)).supported)throw 'nowc';
  const mux=new Mp4Muxer.Muxer({target:new Mp4Muxer.ArrayBufferTarget(),video:{codec:'avc',width:1080,height:1920},fastStart:'in-memory'});
  const enc=new VideoEncoder({output:(c,m)=>mux.addVideoChunk(c,m),error:e=>st('ผิดพลาด '+e)});enc.configure(cfg);
- for(let i=0;i<END*FPS;i++){render(i/FPS);const fr=new VideoFrame(cv,{timestamp:i*1e6/FPS,duration:1e6/FPS});enc.encode(fr,{keyFrame:i%60==0});fr.close();if(i%15==0){st('กำลังสร้าง '+Math.round(i/(END*FPS)*100)+'%');await new Promise(r=>setTimeout(r,0))}}
+ for(let i=0;i<END*FPS;i++){while(enc.encodeQueueSize>2)await new Promise(r=>setTimeout(r,5));// รอ encoder ไม่ให้เฟรมกองจนแรมเต็ม (มือถือรีโหลดเอง)
+ render(i/FPS);const fr=new VideoFrame(cv,{timestamp:i*1e6/FPS,duration:1e6/FPS});enc.encode(fr,{keyFrame:i%60==0});fr.close();if(i%15==0){st('กำลังสร้าง '+Math.round(i/(END*FPS)*100)+'%');await new Promise(r=>setTimeout(r,0))}}
  await enc.flush();mux.finalize();done(new Blob([mux.target.buffer],{type:'video/mp4'}),'clip.mp4')
 }catch(e){const ty=['video/mp4','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));st('เครื่องนี้ใช้โหมดอัดสด รอ '+END+' วินาที…');
  const r=new MediaRecorder(cv.captureStream(FPS),{mimeType:ty}),ch=[];r.ondataavailable=x=>ch.push(x.data);r.onstop=()=>done(new Blob(ch,{type:ty}),ty.includes('mp4')?'clip.mp4':'clip.webm');r.start();
