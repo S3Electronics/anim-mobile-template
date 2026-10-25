@@ -15,8 +15,10 @@ a.dl{display:block;text-align:center;color:#30d158;margin:8px;font-size:16px}
 <div id="st"></div>
 <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5/build/mp4-muxer.js"></script>
 <script>
-// คลิป 10 วินาที สไตล์ flat เล่าเรื่องเอาตัวรอด: เมืองกลางคืน → ตึก ชั้น 23 → ในห้อง แล้วไฟดับ
-const END=10,FPS=30,cv=document.getElementById('c'),g=cv.getContext('2d');
+// คลิป 60 วินาที สไตล์ flat เล่าเรื่องเอาตัวรอด (จบตอนที่ 1)
+// 0 เมือง → 2.8 ตึกชั้น 23 → 5.5 ในห้อง ไฟดับ → 10 ไฟฉายมือถือ → 17 ตีสองมีคนเคาะ → 24 ส่องตาแมว/กระดาษสอด
+// → 31 ข้อความในกระดาษ → 38 เดินลงบันได → 46 ร้านสะดวกซื้อ → 53 หักมุม ไฟห้อง 2307 ติด
+const END=60,FPS=30,cv=document.getElementById('c'),g=cv.getContext('2d');
 const ease=x=>x<0?0:x>1?1:1-Math.pow(1-x,3),pop=x=>x<0?0:x>1?1:1+2.7*Math.pow(x-1,3)+1.7*Math.pow(x-1,2);
 const R=i=>{const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)};
 const L=(a,b,c,d)=>{g.beginPath();g.moveTo(a,b);g.lineTo(c,d);g.stroke()},F=(c,x,y,w,h)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
@@ -84,8 +86,69 @@ function scene3(t){const u=t-5.5,dark=t>8.1||(t>7.8&&Math.floor(t*20)%2==0);
  if(dark){F('rgba(6,8,22,.82)',0,0,1080,1920);g.save();g.fillStyle='#9dff9a';g.shadowColor='#7dff7a';g.shadowBlur=30;g.beginPath();g.arc(852,987,10,0,7);g.arc(888,987,10,0,7);g.fill();g.restore();g.fillStyle='#fff';g.beginPath();g.arc(316,996,9,0,7);g.arc(358,996,9,0,7);g.fill()}
  sub(t,5.7,7.8,[['คุณอยู่ห้องนี้กับแมวแค่ตัวเดียว']]);sub(t,8.15,10.1,[['แล้ว… '],['ไฟก็ดับ','#ff4a3a']])}
 document.fonts.load('800 80px Kanit');document.fonts.load('600 52px Kanit');// โหลดฟอนต์ก่อนวาด
-window.render=t=>{g.setTransform(1,0,0,1,0,0);if(t<2.8)scene1(t);else if(t<5.5)scene2(t);else scene3(t);
- for(const b of [2.8,5.5]){const a=1-Math.abs(t-b)/.18;if(a>0)F('rgba(0,0,0,'+a+')',0,0,1080,1920)}};
+function light(x,y,r,a){g.save();g.globalCompositeOperation='lighter';const lg=g.createRadialGradient(x,y,0,x,y,r);lg.addColorStop(0,'rgba(255,240,200,'+a+')');lg.addColorStop(1,'rgba(255,240,200,0)');g.fillStyle=lg;g.fillRect(x-r,y-r,2*r,2*r);g.restore()}
+function darkness(x,y,r,a){const dg=g.createRadialGradient(x,y,r*.25,x,y,r);dg.addColorStop(0,'rgba(5,6,15,0)');dg.addColorStop(1,'rgba(5,6,15,'+a+')');g.fillStyle=dg;g.fillRect(0,0,1080,1920)}
+function sil(x,y,s,t,walk,ph,phone){g.save();g.translate(x,y);g.scale(s,s);g.fillStyle=g.strokeStyle='#07080d';g.lineCap='round';g.lineWidth=26;const w=walk?Math.sin(t*6+ph)*28:0;
+ L(-16,-150,-16+w,0);L(16,-150,16-w,0);g.beginPath();g.roundRect(-50,-330,100,195,30);g.fill();g.beginPath();g.arc(0,-388,48,0,7);g.fill();
+ if(phone){g.fillStyle='#fff8d0';g.shadowColor='#fff3b0';g.shadowBlur=30;g.beginPath();g.arc(56,-205,10,0,7);g.fill()}g.restore()}
+// ห้องมืด + ไฟฉายมือถือส่องไปที่ (tx,ty)
+function nightRoom(t,tx,ty){scene3(t);g.save();const bg=g.createLinearGradient(420,1300,tx,ty);bg.addColorStop(0,'rgba(255,245,210,.35)');bg.addColorStop(1,'rgba(255,245,210,.05)');
+ const a=Math.atan2(ty-1300,tx-420),d=Math.hypot(tx-420,ty-1300),sp=170;g.fillStyle=bg;g.beginPath();g.moveTo(420,1300);
+ g.lineTo(tx+sp*Math.cos(a+1.57),ty+sp*Math.sin(a+1.57));g.lineTo(tx+sp*Math.cos(a-1.57),ty+sp*Math.sin(a-1.57));g.fill();g.restore();light(tx,ty,240,.3);
+ rr('#111',402,1275,36,64,8);rr('#dfe9ff',407,1281,26,50,5);light(330,1010,160,.12)}
+function scene4(t){const u=t-10;nightRoom(t,720+260*Math.sin(u*.8),930+60*Math.sin(u*1.3));
+ pill(330,800,'แบต 23%','#d9342f',pop((u-3.6)/.35));
+ sub(t,10.3,13.5,[['สัญญาณมือถือ… '],['หายเกลี้ยง','#ff4a3a']]);sub(t,13.7,17,[['โทรหาใครก็ไม่ได้']])}
+function scene5(t){const K=[18.4,18.75,21.3,21.65,22];let sh=0,last=-9;for(const k of K)if(t>=k){last=k;if(t-k<.18)sh=1-(t-k)/.18}
+ g.save();g.translate(sh*18*Math.sin(t*90),sh*12*Math.cos(t*70));const k=ease((t-17.6)/.8);nightRoom(t,720-570*k,930+20*k);g.restore();
+ if(t-last<.55){const i=K.indexOf(last);g.save();g.translate(i%2?260:200,i%2?860:740);g.rotate(i%2?.12:-.12);txt([['ก๊อก!','#ffd23f']],0,0,120);g.restore()}
+ const p=pop((t-17.2)/.35);if(p>0){g.save();g.translate(540,330);g.scale(p,p);txt([['ตีสอง']],0,0,130);g.restore()}
+ sub(t,17.3,20.9,[['มีคนมา'],['เคาะประตู','#ff4a3a']]);sub(t,21.1,24,[['ทั้งที่ชั้นนี้… ไม่มีใครเหลือแล้ว']])}
+function scene6(t){const u=t-24;F('#000',0,0,1080,1920);
+ if(u<3.5){const fl=.75+.25*Math.max(Math.sin(t*23),Math.sin(t*7.3));g.save();g.beginPath();g.arc(540,820,400,0,7);g.clip();g.globalAlpha=fl;
+  F('#232a25',140,420,800,800);g.fillStyle='#151a17';g.beginPath();g.moveTo(140,420);g.lineTo(940,420);g.lineTo(600,760);g.lineTo(480,760);g.fill();
+  g.fillStyle='#2e342e';g.beginPath();g.moveTo(140,1220);g.lineTo(940,1220);g.lineTo(600,860);g.lineTo(480,860);g.fill();
+  g.fillStyle='#1b211d';g.beginPath();g.moveTo(140,420);g.lineTo(480,760);g.lineTo(480,860);g.lineTo(140,1220);g.fill();g.beginPath();g.moveTo(940,420);g.lineTo(600,760);g.lineTo(600,860);g.lineTo(940,1220);g.fill();
+  F('#0e1210',480,760,120,100);g.fillStyle='#3a2e22';for(const [x1,x2] of [[230,300],[380,420]]){g.beginPath();g.moveTo(x1,1220-(x1-140)*1.06+100);g.lineTo(x1,520+(x1-140));g.lineTo(x2,520+(x2-140));g.lineTo(x2,1220-(x2-140)*1.06+100);g.fill()}
+  g.shadowColor='#2dff7a';g.shadowBlur=30;F('#1fbf5a',505,722,70,30);g.shadowBlur=0;g.fillStyle='#eafff0';g.font='600 22px Kanit';g.textAlign='center';g.fillText('EXIT',540,744);g.globalAlpha=1;
+  const vg=g.createRadialGradient(540,820,150,540,820,400);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.9)');g.fillStyle=vg;g.fillRect(140,420,800,800);g.restore();
+  g.strokeStyle='#6b5a3a';g.lineWidth=14;g.beginPath();g.arc(540,820,404,0,7);g.stroke()}
+ else{F('#3a2b1d',0,0,1080,800);g.strokeStyle='#2c2016';g.lineWidth=10;g.strokeRect(120,-20,840,760);F('#1c160f',0,800,1080,1120);F('rgba(201,178,122,'+(.5+.3*Math.sin(t*20))+')',0,792,1080,8);
+  const k=ease((u-3.8)/1.6);g.fillStyle='#efe8d6';g.beginPath();g.moveTo(360,800);g.lineTo(720,800);g.lineTo(750,800+330*k);g.lineTo(330,800+330*k);g.fill();
+  g.strokeStyle='#3b4f9a';g.lineWidth=5;for(let i=1;i<4;i++)if(330*k>i*70)L(400,800+i*70,640-i*20,800+i*70);
+  light(540,930,420,.25);darkness(540,930,800,.85)}
+ sub(t,24.3,27.4,[['ส่องตาแมว… '],['ไม่มีใครเลย','#ff4a3a']]);sub(t,27.7,31,[['แล้วก็มีกระดาษ… สอดเข้ามา']])}
+function scene7(t){F('#0c0d14',0,0,1080,1920);g.save();g.translate(540,760);g.rotate(-.04);F('#efe8d6',-380,-430,760,860);g.strokeStyle='#c9d7e6';g.lineWidth=3;for(let y=-330;y<400;y+=110)L(-350,y+20,350,y+20);
+ const lines=[['อย่าเปิดประตู','#c0302a',31.4],['ไฟจะไม่มาอีก 3 วัน','#1d2a6b',32.5],['ลงไปเอาน้ำที่ชั้น 1','#1d2a6b',33.6],['ก่อนฟ้าสว่าง','#1d2a6b',34.7]];
+ g.font='600 66px Kanit';g.textAlign='left';lines.forEach(([c,col,ti],i)=>{const k=Math.min(1,Math.max(0,(t-ti)/.8));if(!k)return;const w=g.measureText(c).width;
+  g.save();g.beginPath();g.rect(-330,-440+i*165,w*k+10,240);g.clip();g.fillStyle=col;g.fillText(c,-330,-260+i*165);g.restore()});g.restore();
+ light(540,760,520,.18);darkness(540,760,950,.8);sub(t,35.5,38,[['ใครเป็นคนเขียน…?']])}
+function scene8(t){const u=t-38,o=(u*260)%720;F('#24262d',0,0,1080,1920);
+ for(let j=-1;j<4;j++){const y0=j*720-o;for(let s=0;s<12;s++){F('#454952',120+s*70,y0+s*30+200,72,60);F('#5d626d',120+s*70,y0+s*30+200,72,8);
+   F('#454952',890-s*70,y0+s*30+560,72,60);F('#5d626d',890-s*70,y0+s*30+560,72,8)}
+  g.strokeStyle='#8a8f9c';g.lineWidth=8;L(120,y0+90,960,y0+450);L(960,y0+450,120,y0+810)}
+ const bob=Math.abs(Math.sin(u*5))*14;g.save();g.translate(540,1180+bob);g.scale(.62,.62);g.translate(-330,-1330);man(t,0,0);g.restore();
+ light(560,1350,330,.3);darkness(560,1250,720,.93);
+ const n=Math.max(1,23-Math.floor(u/7.4*23));pill(540,300,'ชั้น '+n,'#e8752f',1);
+ sub(t,38.3,42,[['เดินลงบันได 23 ชั้น… ในความมืด']]);sub(t,42.2,46,[['ได้ยินเสียงฝีเท้า… '],['ตามมาข้างบน','#ff4a3a']])}
+function scene9(t){const u=t-46,gr=g.createLinearGradient(0,0,0,1920);gr.addColorStop(0,'#1b1f38');gr.addColorStop(1,'#2a2d48');g.fillStyle=gr;g.fillRect(0,0,1080,1920);
+ F('#3f6fb5',60,560,960,120);F('#f0a63a',60,650,960,16);txt([['ร้านสะดวกซื้อ 24 ชม.']],540,640,72);F('#11131f',60,690,960,820);F('#8f8b78',100,820,880,600);
+ ['#e0a83f','#6f9fd8','#d5603f'].forEach((c,r)=>{for(let col=0;col<3;col++)for(let i=0;i<8;i++)if(R(r*31+col*7+i)>.5||(r==1&&col==1&&i<2))F(c,140+col*280+i*26,880+r*120,22,40)});
+ F('rgba(200,220,230,.3)',430,960,200,460);F('#23263a',0,1500,1080,420);
+ for(const [x0,v,sc,ph,ph2] of [[-80,70,1.25,0,1],[230,0,1.4,1,0],[600,-30,1.35,2,1],[860,0,1.5,3,1],[1150,-90,1.2,4,0]])sil(x0+v*u,1720,sc,t,v!=0,ph,ph2);
+ sub(t,46.3,49.6,[['ทั้งซอย… มารวมกันที่นี่']]);sub(t,49.8,53,[['น้ำบนชั้น… '],['เหลือแค่ 2 แพ็ค','#ff4a3a']])}
+function scene10(t){const u=t-53;F('#141936',0,0,1080,1920);stars(70,600);g.save();const z=1+.25*ease(u/6);g.translate(546,1016);g.scale(z,z);g.translate(-546,-1016);
+ F('#1f2550',-40,700,330,1300);F('#1f2550',800,560,320,1400);F('#3a4278',280,395,520,32);F('#2a3062',290,425,500,1500);
+ for(let r=0;r<31;r++)for(let c=0;c<6;c++)F('#323a70',312+c*78,450+r*46,58,28);
+ const on=u>1&&!(u<1.4&&Math.floor(t*25)%2);if(on){g.shadowColor='#ffd780';g.shadowBlur=40;F('#ffe08a',546,1002,58,28);g.shadowBlur=0}
+ if(u>1.8){g.strokeStyle='#e9e4d6';g.lineWidth=4;L(604,1016,760,880)}pill(800,850,'ห้อง 2307','#d9342f',pop((u-1.8)/.35));g.restore();
+ sil(540,2120,1.7,t,0,0,0);rr('#e8f2ff',610,1800,70,110,10);
+ const p=pop((t-57.3)/.35);if(p>0){g.save();g.translate(540,330);g.scale(p,p);txt([['จบตอนที่ 1']],0,0,120);g.restore()}
+ sub(t,53.5,57,[['แต่ห้อง 2307… '],['ไฟติดอยู่','#ff4a3a']]);sub(t,57.2,60,[['แล้วใครอยู่ในห้องนั้น…?']])}
+const SC=[[0,scene1],[2.8,scene2],[5.5,scene3],[10,scene4],[17,scene5],[24,scene6],[31,scene7],[38,scene8],[46,scene9],[53,scene10]];
+window.render=t=>{g.setTransform(1,0,0,1,0,0);let f=scene1;for(const [a,fn] of SC)if(t>=a)f=fn;f(t);
+ for(const [b] of SC.slice(1)){if(b==10||b==17)continue;const a=1-Math.abs(t-b)/.18;if(a>0)F('rgba(0,0,0,'+a+')',0,0,1080,1920)}
+ if(t>27.3&&t<27.7)F('rgba(0,0,0,'+(1-Math.abs(t-27.5)/.2)+')',0,0,1080,1920)};
 let ready=document.fonts.ready.then(()=>render(0));const st=m=>document.getElementById('st').textContent=m;
 document.getElementById('play').onclick=()=>{const s=performance.now();(function f(){const t=(performance.now()-s)/1000;render(Math.min(t,END));if(t<END)requestAnimationFrame(f)})()};
 // บันทึกเป็น MP4 ในเครื่อง (WebCodecs) — ไม่ต้องมีเซิร์ฟเวอร์ ; เครื่องเก่าใช้ไม่ได้จะอัดแบบเรียลไทม์แทน
