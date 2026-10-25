@@ -1,0 +1,392 @@
+[
+{
+"id": "zombie_groan",
+"file": "sfx/zombie_groan.mp3",
+"tags": "ซอมบี้ ครวญ คราง ผี",
+"dur": 5.1,
+"title": "Zombie Groan",
+"author": "ChuckChuckGoof",
+"source": "https://freesound.org/people/ChuckChuckGoof/sounds/559558",
+"license": "CC0"
+},
+{
+"id": "zombie_attack",
+"file": "sfx/zombie_attack.mp3",
+"tags": "ซอมบี้ จู่โจม กัด",
+"dur": 6.0,
+"title": "Zombie Attack",
+"author": "soykevin",
+"source": "https://freesound.org/people/soykevin/sounds/213509",
+"license": "CC0"
+},
+{
+"id": "zombie_breath",
+"file": "sfx/zombie_breath.mp3",
+"tags": "ซอมบี้ หายใจ หลอน",
+"dur": 8.0,
+"title": "Zombie breathing",
+"author": "Huminaatio",
+"source": "https://freesound.org/people/Huminaatio/sounds/189281",
+"license": "CC0"
+},
+{
+"id": "monster_growl",
+"file": "sfx/monster_growl.mp3",
+"tags": "สัตว์ประหลาด คำราม",
+"dur": 5.8,
+"title": "Deep Monster Growl",
+"author": "uagadugu",
+"source": "https://freesound.org/people/uagadugu/sounds/222523",
+"license": "CC0"
+},
+{
+"id": "scream_man",
+"file": "sfx/scream_man.mp3",
+"tags": "กรีดร้อง ผู้ชาย ตกใจ",
+"dur": 4.3,
+"title": "Scream",
+"author": "ngrib",
+"source": "https://freesound.org/people/ngrib/sounds/381951",
+"license": "CC0"
+},
+{
+"id": "scream_woman",
+"file": "sfx/scream_woman.mp3",
+"tags": "กรีดร้อง ผู้หญิง ตกใจ",
+"dur": 2.0,
+"title": "Female scream 02",
+"author": "missozzy",
+"source": "https://freesound.org/people/missozzy/sounds/169811",
+"license": "CC0"
+},
+{
+"id": "evil_laugh",
+"file": "sfx/evil_laugh.mp3",
+"tags": "หัวเราะ ร้าย แม่มด",
+"dur": 3.1,
+"title": "Female Evil Laugh",
+"author": "MadamVicious",
+"source": "https://freesound.org/people/MadamVicious/sounds/219778",
+"license": "CC0"
+},
+{
+"id": "heartbeat",
+"file": "sfx/heartbeat.mp3",
+"tags": "หัวใจเต้น ตื่นเต้น ลุ้น",
+"dur": 5.2,
+"title": "Human Heartbeat (60 BPM)",
+"author": "FenrirFangs",
+"source": "https://freesound.org/people/FenrirFangs/sounds/213181",
+"license": "CC0"
+},
+{
+"id": "heartbeat_fast",
+"file": "sfx/heartbeat_fast.mp3",
+"tags": "หัวใจเต้นเร็ว กลัว",
+"dur": 8.0,
+"title": "heartbeat-120bpm.wav",
+"author": "loudernoises",
+"source": "https://freesound.org/people/loudernoises/sounds/332806",
+"license": "CC0"
+},
+{
+"id": "footsteps_wood",
+"file": "sfx/footsteps_wood.mp3",
+"tags": "เดิน ฝีเท้า พื้นไม้",
+"dur": 5.9,
+"title": "Footsteps on Wooden Floor.aif",
+"author": "ftpalad",
+"source": "https://freesound.org/people/ftpalad/sounds/119914",
+"license": "CC0"
+},
+{
+"id": "footsteps_gravel",
+"file": "sfx/footsteps_gravel.mp3",
+"tags": "เดิน ฝีเท้า กรวด ข้างนอก",
+"dur": 6.0,
+"title": "Footsteps Dirt Gravel",
+"author": "PotatokingXII",
+"source": "https://freesound.org/people/PotatokingXII/sounds/352870",
+"license": "CC0"
+},
+{
+"id": "door_creak",
+"file": "sfx/door_creak.mp3",
+"tags": "ประตู เอี๊ยด เปิด",
+"dur": 3.4,
+"title": "Wooden door creaking",
+"author": "TheBuilder15",
+"source": "https://freesound.org/people/TheBuilder15/sounds/367052",
+"license": "CC0"
+},
+{
+"id": "thunder",
+"file": "sfx/thunder.mp3",
+"tags": "ฟ้าร้อง ฟ้าผ่า พายุ",
+"dur": 8.0,
+"title": "Thunder",
+"author": "Fission9",
+"source": "https://freesound.org/people/Fission9/sounds/465314",
+"license": "CC0"
+},
+{
+"id": "rain",
+"file": "sfx/rain.mp3",
+"tags": "ฝนตก บรรยากาศ",
+"dur": 20.0,
+"title": "1 Minute Rain (Medium)",
+"author": "yzhamua",
+"source": "https://freesound.org/people/yzhamua/sounds/188655",
+"license": "CC0"
+},
+{
+"id": "wind",
+"file": "sfx/wind.mp3",
+"tags": "ลม พัด",
+"dur": 7.7,
+"title": "Wind Gust",
+"author": "crashoverride6",
+"source": "https://freesound.org/people/crashoverride6/sounds/146932",
+"license": "CC0"
+},
+{
+"id": "whoosh_deep",
+"file": "sfx/whoosh_deep.mp3",
+"tags": "วูบ ปัด เปลี่ยนฉาก",
+"dur": 3.0,
+"title": "Deep Whoosh #1",
+"author": "Kinoton",
+"source": "https://freesound.org/people/Kinoton/sounds/351256",
+"license": "CC0"
+},
+{
+"id": "whoosh_fast",
+"file": "sfx/whoosh_fast.mp3",
+"tags": "วูบ เร็ว ปัด",
+"dur": 0.5,
+"title": "Swipe Whoosh",
+"author": "qubodup",
+"source": "https://freesound.org/people/qubodup/sounds/60007",
+"license": "CC0"
+},
+{
+"id": "punch",
+"file": "sfx/punch.mp3",
+"tags": "ต่อย ชก ตี",
+"dur": 1.4,
+"title": "Punch #1.mp3",
+"author": "lewisisminted",
+"source": "https://freesound.org/people/lewisisminted/sounds/162370",
+"license": "CC0"
+},
+{
+"id": "explosion",
+"file": "sfx/explosion.mp3",
+"tags": "ระเบิด บึ้ม",
+"dur": 5.1,
+"title": "Explosion with Debris.wav",
+"author": "FxKid2",
+"source": "https://freesound.org/people/FxKid2/sounds/367622",
+"license": "CC0"
+},
+{
+"id": "glass_break",
+"file": "sfx/glass_break.mp3",
+"tags": "แก้วแตก กระจกแตก",
+"dur": 2.3,
+"title": "Glass Breaking",
+"author": "ToxicFilmzSRsounds",
+"source": "https://freesound.org/people/ToxicFilmzSRsounds/sounds/378568",
+"license": "CC0"
+},
+{
+"id": "cat_meow",
+"file": "sfx/cat_meow.mp3",
+"tags": "แมว ร้อง เหมียว",
+"dur": 1.6,
+"title": "Cat meow",
+"author": "philsapphire",
+"source": "https://freesound.org/people/philsapphire/sounds/256452",
+"license": "CC0"
+},
+{
+"id": "dog_bark",
+"file": "sfx/dog_bark.mp3",
+"tags": "หมา เห่า",
+"dur": 2.5,
+"title": "Dog barks",
+"author": "16FVolejnikovaA",
+"source": "https://freesound.org/people/16FVolejnikovaA/sounds/498394",
+"license": "CC0"
+},
+{
+"id": "phone_ring",
+"file": "sfx/phone_ring.mp3",
+"tags": "โทรศัพท์ ดัง มือถือ",
+"dur": 3.8,
+"title": "Phone Ringing Sound.wav",
+"author": "fspera",
+"source": "https://freesound.org/people/fspera/sounds/528111",
+"license": "CC0"
+},
+{
+"id": "clock_tick",
+"file": "sfx/clock_tick.mp3",
+"tags": "นาฬิกา ติ๊กต็อก เวลา",
+"dur": 6.0,
+"title": "Clock ticking",
+"author": "olver",
+"source": "https://freesound.org/people/olver/sounds/130388",
+"license": "CC0"
+},
+{
+"id": "car_horn",
+"file": "sfx/car_horn.mp3",
+"tags": "แตรรถ บีบแตร",
+"dur": 2.6,
+"title": "Car Horn Beeps.mp3",
+"author": "hsaunier10",
+"source": "https://freesound.org/people/hsaunier10/sounds/254678",
+"license": "CC0"
+},
+{
+"id": "siren",
+"file": "sfx/siren.mp3",
+"tags": "ไซเรน ตำรวจ",
+"dur": 8.0,
+"title": "Police siren",
+"author": "sofialomba",
+"source": "https://freesound.org/people/sofialomba/sounds/469411",
+"license": "CC0"
+},
+{
+"id": "crowd_cheer",
+"file": "sfx/crowd_cheer.mp3",
+"tags": "เชียร์ ฝูงชน ดีใจ",
+"dur": 6.0,
+"title": "Crowd Cheering",
+"author": "SoundsExciting",
+"source": "https://freesound.org/people/SoundsExciting/sounds/365132",
+"license": "CC0"
+},
+{
+"id": "laugh_crowd",
+"file": "sfx/laugh_crowd.mp3",
+"tags": "คนหัวเราะ ขำ ตลก",
+"dur": 4.6,
+"title": "Small Crowd Laughing",
+"author": "snakebarney",
+"source": "https://freesound.org/people/snakebarney/sounds/138112",
+"license": "CC0"
+},
+{
+"id": "applause",
+"file": "sfx/applause.mp3",
+"tags": "ปรบมือ",
+"dur": 6.0,
+"title": "Applause 2.WAV",
+"author": "Sandermotions",
+"source": "https://freesound.org/people/Sandermotions/sounds/277021",
+"license": "CC0"
+},
+{
+"id": "ding",
+"file": "sfx/ding.mp3",
+"tags": "ติ๊ง ถูก ไอเดีย",
+"dur": 0.6,
+"title": "Ding 1",
+"author": "greenvwbeetle",
+"source": "https://freesound.org/people/greenvwbeetle/sounds/241288",
+"license": "CC0"
+},
+{
+"id": "camera_shutter",
+"file": "sfx/camera_shutter.mp3",
+"tags": "ชัตเตอร์ ถ่ายรูป แชะ",
+"dur": 1.6,
+"title": "Camera Shutter Click",
+"author": "Kodack",
+"source": "https://freesound.org/people/Kodack/sounds/271010",
+"license": "CC0"
+},
+{
+"id": "pop",
+"file": "sfx/pop.mp3",
+"tags": "ป๊อป เด้ง โผล่",
+"dur": 2.0,
+"title": "Pop (made by DuffyBro)",
+"author": "DuffyBro",
+"source": "https://freesound.org/people/DuffyBro/sounds/319107",
+"license": "CC0"
+},
+{
+"id": "music_suspense",
+"file": "music/music_suspense.mp3",
+"tags": "เพลง ลุ้น ตึงเครียด ลึกลับ",
+"dur": 21.2,
+"title": "Soft suspense music",
+"author": "NeoSpica",
+"source": "https://freesound.org/people/NeoSpica/sounds/504616",
+"license": "CC0"
+},
+{
+"id": "music_horror",
+"file": "music/music_horror.mp3",
+"tags": "เพลง สยอง ผี ซอมบี้ หลอน",
+"dur": 67.9,
+"title": "Horror Ambience (Loopable)",
+"author": "audioguy42",
+"source": "https://freesound.org/people/audioguy42/sounds/625467",
+"license": "CC0"
+},
+{
+"id": "music_chase",
+"file": "music/music_chase.mp3",
+"tags": "เพลง วิ่งหนี ไล่ล่า แอ็คชัน",
+"dur": 18.7,
+"title": "Horror Chase Music loop",
+"author": "PearceWilsonKing",
+"source": "https://freesound.org/people/PearceWilsonKing/sounds/422274",
+"license": "CC0"
+},
+{
+"id": "music_happy",
+"file": "music/music_happy.mp3",
+"tags": "เพลง สนุก สดใส ร่าเริง",
+"dur": 57.7,
+"title": "Upbeat loop",
+"author": "mistermender",
+"source": "https://freesound.org/people/mistermender/sounds/512340",
+"license": "CC0"
+},
+{
+"id": "music_lofi",
+"file": "music/music_lofi.mp3",
+"tags": "เพลง ชิล lofi สบายๆ",
+"dur": 40.5,
+"title": "Chill Lofi Melody Loop 95 BPM.wav",
+"author": "holizna",
+"source": "https://freesound.org/people/holizna/sounds/629147",
+"license": "CC0"
+},
+{
+"id": "music_sad",
+"file": "music/music_sad.mp3",
+"tags": "เพลง เศร้า เปียโน ซึ้ง",
+"dur": 60.2,
+"title": "Sad Piano Chord Progression",
+"author": "michael_grinnell",
+"source": "https://freesound.org/people/michael_grinnell/sounds/530977",
+"license": "CC0"
+},
+{
+"id": "music_uplift",
+"file": "music/music_uplift.mp3",
+"tags": "เพลง ฮึกเหิม แรงบันดาลใจ ตอนจบ",
+"dur": 78.1,
+"title": "Overlook (uplifting ambient loop)",
+"author": "SondreDrakensson",
+"source": "https://freesound.org/people/SondreDrakensson/sounds/506495",
+"license": "CC0"
+}
+]
