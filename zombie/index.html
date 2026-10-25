@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ซอมบี้ขี้เซา</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;color:#eee;font:15px -apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px}
+canvas{width:min(92vw,360px);aspect-ratio:9/16;border-radius:14px;background:#111}
+.row{display:flex;gap:8px;margin:12px 0;width:min(92vw,360px)}
+button{flex:1;padding:12px;border-radius:12px;border:1px solid #0a84ff;background:transparent;color:#0a84ff;font:inherit;font-weight:600}
+button.rec{border-color:#ff453a;color:#ff453a}#st{width:min(92vw,360px);font-size:13px;color:#999;text-align:center;min-height:20px}
+a.dl{display:block;text-align:center;color:#30d158;margin:8px;font-size:16px}
+</style></head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div class="row"><button id="play">▶ เล่น</button><button id="rec" class="rec">⬇ บันทึกเป็น MP4</button></div>
+<div id="st"></div>
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5/build/mp4-muxer.js"></script>
+<script>
+// คลิป 10 วินาที: สุสานเที่ยงคืน → มือโผล่ → ซอมบี้ลุกเดิน → หักมุม ขอนอนต่อ
+const END=10,FPS=30,cv=document.getElementById('c'),g=cv.getContext('2d');
+const ease=x=>x<0?0:x>1?1:1-Math.pow(1-x,3),GY=1300;
+const L=(a,b,c,d)=>{g.beginPath();g.moveTo(a,b);g.lineTo(c,d);g.stroke()};
+function sub(t,a,b,c,col){if(t<a||t>b)return;const k=ease((t-a)/.3);g.globalAlpha=k;g.font='800 72px Kanit';g.textAlign='center';g.lineWidth=14;g.strokeStyle='#000';g.strokeText(c,540,1560+30*(1-k));g.fillStyle=col||'#fff';g.fillText(c,540,1560+30*(1-k));g.globalAlpha=1}
+function stone(x,y,s){g.save();g.translate(x,y);g.scale(s,s);g.fillStyle='#5b6070';g.beginPath();g.moveTo(-70,0);g.lineTo(-70,-150);g.arc(0,-150,70,Math.PI,0);g.lineTo(70,0);g.fill();
+ g.fillStyle='#3d4150';g.font='800 46px Kanit';g.textAlign='center';g.fillText('RIP',0,-120);g.restore()}
+function scene(t){const gr=g.createLinearGradient(0,0,0,1920);gr.addColorStop(0,'#1b1036');gr.addColorStop(1,'#0a0714');g.fillStyle=gr;g.fillRect(0,0,1080,1920);
+ g.fillStyle='rgba(230,240,200,.15)';g.beginPath();g.arc(780,420,150,0,7);g.fill();g.fillStyle='#e9f0c8';g.beginPath();g.arc(780,420,105,0,7);g.fill();// พระจันทร์
+ g.fillStyle='#120c1f';g.beginPath();g.moveTo(0,GY);for(let x=0;x<=1080;x+=60)g.lineTo(x,GY-60-40*Math.sin(x*.012));g.lineTo(1080,GY);g.fill();// เนินไกล
+ stone(190,GY+10,1.1);stone(900,GY+10,.9);
+ g.fillStyle='#1a1424';g.fillRect(0,GY,1080,620);g.fillStyle='#2a1e2c';g.beginPath();g.ellipse(540,GY+20,170,34,0,0,7);g.fill();// หลุมศพ
+ for(let i=0;i<5;i++){const fx=((i*260+t*40*(i%2?1:-1))%1400+1400)%1400-160;g.fillStyle='rgba(200,200,230,.07)';g.beginPath();g.ellipse(fx,GY-10+i*18,260,40,0,0,7);g.fill()}}// หมอก
+function hand(x,top,t){g.save();g.beginPath();g.rect(0,0,1080,GY+10);g.clip();g.strokeStyle='#7fbf6a';g.lineCap='round';g.lineWidth=30;L(x,GY+40,x,top);
+ g.lineWidth=12;for(let i=0;i<4;i++){const a=-2.2+i*.45+.25*Math.sin(t*12+i);L(x,top,x+50*Math.cos(a),top+50*Math.sin(a))}g.restore()}
+function zombie(x,y,s,t,walk,mouth){g.save();g.translate(x,y);g.scale(s,s);g.lineCap='round';
+ const w=walk?Math.sin(t*5):0;g.strokeStyle='#5e9a4c';g.lineWidth=12;L(0,-70,35*w,0);L(0,-70,-25*w,0);// ขา (เดินกะเผลก)
+ g.fillStyle='#5a3f78';g.beginPath();g.moveTo(-26,-150);g.lineTo(26,-150);g.lineTo(28,-68);g.lineTo(14,-80);g.lineTo(2,-64);g.lineTo(-12,-82);g.lineTo(-28,-66);g.fill();// เสื้อขาด
+ const b=walk?6*Math.sin(t*5+1):0;g.strokeStyle='#7fbf6a';g.lineWidth=12;L(6,-135,95,-130+b);L(-6,-128,85,-118-b);// แขนยื่น
+ g.fillStyle='#7fbf6a';g.strokeStyle='#355e2a';g.lineWidth=6;g.beginPath();g.arc(0,-192,40,0,7);g.fill();g.stroke();
+ g.strokeStyle='#2b2238';g.lineWidth=5;L(-30,-222,-18,-238);L(-8,-230,0,-246);L(12,-228,22,-240);// ผม
+ g.fillStyle='#fff';g.beginPath();g.arc(16,-198,12,0,7);g.fill();g.fillStyle='#d4202a';g.beginPath();g.arc(20,-198,5,0,7);g.fill();// ตา
+ g.strokeStyle='#355e2a';g.lineWidth=3;L(-26,-205,-10,-190);L(-24,-192,-14,-202);// แผลเย็บ
+ g.fillStyle='#2a0a10';g.beginPath();g.ellipse(24,-170,12,4+mouth*16,0,0,7);g.fill();g.restore()}
+window.render=t=>{g.setTransform(1,0,0,1,0,0);scene(t);
+ if(t>.8&&t<3.6)hand(540,GY+40-ease((t-.8)/1.6)*150,t);
+ if(t>=3.6){let y=GY,x=540,s=1.5,walk=0,mouth=.2;
+  if(t<4.6)y=GY+380*(1-ease((t-3.6)/1))// ลุกขึ้นจากหลุม
+  else if(t<7.4){const k=(t-4.6)/2.8;x=540+130*k;s=1.5+.4*k;y=GY+110*k;walk=1}
+  else{x=670;s=1.9;y=GY+110;mouth=t<8.6?ease((t-7.6)/.5)*(t<8.2?1:1-(t-8.2)/.4):0;if(t>8.6)y+=520*ease((t-8.6)/1)}// หาว แล้วมุดกลับลงดิน
+  g.save();g.beginPath();g.rect(0,0,1080,t<4.6?GY+10:GY+110+(t>8.6?0:600));g.clip();zombie(x,y,s,t,walk,mouth);g.restore()}
+ if(t>2.75&&t<3.05){g.fillStyle='rgba(255,255,255,'+(.8*(1-Math.abs(t-2.9)/.15))+')';g.fillRect(0,0,1080,1920)}// ฟ้าแลบ
+ if(t>8){g.font='800 90px Kanit';g.textAlign='center';g.fillStyle='#bfe3ff';g.lineWidth=10;g.strokeStyle='#000';
+  for(let i=0;i<3;i++){const k=t-8-i*.35;if(k<0)continue;g.globalAlpha=Math.max(0,1-k/2);const zx=760+i*60,zy=820-k*90-i*30;g.strokeText('Z',zx,zy);g.fillText('Z',zx,zy)}g.globalAlpha=1}
+ if(t<2.6&&t>.1){g.font='800 100px Kanit';g.textAlign='center';g.fillStyle='#b8ff7a';g.lineWidth=12;g.strokeStyle='#000';g.strokeText('เที่ยงคืน…',540,260);g.fillText('เที่ยงคืน…',540,260)}
+ sub(t,.2,2.7,'ที่สุสานเงียบสงัด');sub(t,2.9,4.6,'มีมือโผล่ขึ้นมา!!','#ff5a4a');sub(t,4.7,7.4,'ซอมบี้ตื่นแล้ว!');sub(t,7.5,10.1,'…ขอนอนต่ออีก 5 นาที','#b8ff7a')};
+let ready=document.fonts.ready.then(()=>render(0));const st=m=>document.getElementById('st').textContent=m;
+document.getElementById('play').onclick=()=>{const s=performance.now();(function f(){const t=(performance.now()-s)/1000;render(Math.min(t,END));if(t<END)requestAnimationFrame(f)})()};
+// บันทึกเป็น MP4 ในเครื่อง (WebCodecs) — ไม่ต้องมีเซิร์ฟเวอร์ ; เครื่องเก่าใช้ไม่ได้จะอัดแบบเรียลไทม์แทน
+document.getElementById('rec').onclick=async()=>{await ready;try{
+ if(!window.VideoEncoder)throw 'nowc';const cfg={codec:'avc1.640028',width:1080,height:1920,bitrate:6e6,framerate:FPS};if(!(await VideoEncoder.isConfigSupported(cfg)).supported)throw 'nowc';
+ const mux=new Mp4Muxer.Muxer({target:new Mp4Muxer.ArrayBufferTarget(),video:{codec:'avc',width:1080,height:1920},fastStart:'in-memory'});
+ const enc=new VideoEncoder({output:(c,m)=>mux.addVideoChunk(c,m),error:e=>st('ผิดพลาด '+e)});enc.configure(cfg);
+ for(let i=0;i<END*FPS;i++){render(i/FPS);const fr=new VideoFrame(cv,{timestamp:i*1e6/FPS,duration:1e6/FPS});enc.encode(fr,{keyFrame:i%60==0});fr.close();if(i%15==0){st('กำลังสร้าง '+Math.round(i/(END*FPS)*100)+'%');await new Promise(r=>setTimeout(r,0))}}
+ await enc.flush();mux.finalize();done(new Blob([mux.target.buffer],{type:'video/mp4'}),'clip.mp4')
+}catch(e){const ty=['video/mp4','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));st('เครื่องนี้ใช้โหมดอัดสด รอ '+END+' วินาที…');
+ const r=new MediaRecorder(cv.captureStream(FPS),{mimeType:ty}),ch=[];r.ondataavailable=x=>ch.push(x.data);r.onstop=()=>done(new Blob(ch,{type:ty}),ty.includes('mp4')?'clip.mp4':'clip.webm');r.start();
+ const s=performance.now();(function f(){const t=(performance.now()-s)/1000;render(Math.min(t,END));if(t<END)requestAnimationFrame(f);else r.stop()})()}};
+function done(b,n){st('เสร็จแล้ว '+(b.size/1048576).toFixed(1)+' MB');const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.className='dl';a.textContent='แตะเพื่อบันทึก '+n;document.body.appendChild(a);window.RESULT={n,size:b.size}}
+</script></body></html>
